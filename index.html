@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoEdu - Media Pembelajaran Interaktif Energi Alternatif</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6.5.1 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        accent: {
+                            amber: '#f59e0b',
+                            cyan: '#06b6d4',
+                            sky: '#0284c7',
+                            purple: '#8b5cf6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* 3D Card Flip CSS */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: left;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.25rem;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Glowing Effects */
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.25);
+        }
+        .glow-amber {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+        }
+
+        /* Pulse Animation */
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        .animate-subtle-pulse {
+            animation: subtle-pulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen selection:bg-emerald-500 selection:text-white">
+
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-slate-700/60 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex items-center justify-between">
+                
+                <!-- Brand & Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-900 font-extrabold text-xl shadow-lg shadow-emerald-500/20">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg md:text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                            EcoEdu <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Energi Alternatif</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400 hidden sm:block">Media Pembelajaran Interaktif Sains & Teknologi Hijau</p>
+                    </div>
+                </div>
+
+                <!-- User Level & XP Badge -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-slate-800/80 border border-slate-700/80 rounded-xl px-3 py-1.5 flex items-center space-x-2">
+                        <i class="fa-solid fa-star text-amber-400 text-sm"></i>
+                        <div>
+                            <p class="text-[9px] text-slate-400 font-medium uppercase">Poin Pembelajar</p>
+                            <p id="user-xp" class="text-xs font-bold text-amber-300">0 XP</p>
+                        </div>
+                    </div>
+
+                    <!-- Mute/Sound Effect Toggle -->
+                    <button id="sound-toggle-btn" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition border border-slate-700" title="Suara Efek">
+                        <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs (Age 12-20 Friendly) -->
+            <nav class="flex space-x-1 sm:space-x-2 mt-3 overflow-x-auto pb-1 no-scrollbar border-t border-slate-800 pt-2">
+                <button onclick="switchTab('flashcards')" id="tab-flashcards" class="nav-tab active px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition whitespace-nowrap bg-emerald-600 text-white shadow-lg shadow-emerald-600/30">
+                    <i class="fa-solid fa-clone"></i> Flash Cards
+                </button>
+                <button onclick="switchTab('truefalse')" id="tab-truefalse" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition whitespace-nowrap bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-slate-200">
+                    <i class="fa-solid fa-circle-half-stroke"></i> Benar / Salah
+                </button>
+                <button onclick="switchTab('matching')" id="tab-matching" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition whitespace-nowrap bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-slate-200">
+                    <i class="fa-solid fa-puzzle-piece"></i> Menjodohkan
+                </button>
+                <button onclick="switchTab('game')" id="tab-game" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition whitespace-nowrap bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-slate-200">
+                    <i class="fa-solid fa-gamepad text-amber-400"></i> Mini Game Simulator
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition whitespace-nowrap bg-slate-800/80 text-slate-400 hover:bg-slate-700 hover:text-slate-200">
+                    <i class="fa-solid fa-trophy text-amber-400"></i> Kuis Evaluasi
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= SECTION 1: FLASH CARDS ================= -->
+        <section id="sec-flashcards" class="tab-content space-y-6">
+            <!-- Header Info & Search -->
+            <div class="glass-panel rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-emerald-400"></i> Kartu Pembelajaran Energi
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Klik pada kartu untuk membalik dan melihat konsep, cara kerja, serta contoh penerapan sainsnya.</p>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <div class="relative flex-grow md:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="card-search" placeholder="Cari energi..." class="w-full pl-9 pr-3 py-2 bg-slate-800/90 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-emerald-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flashcards Grid -->
+            <div id="flashcards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Dynamically generated flashcards -->
+            </div>
+        </section>
+
+        <!-- ================= SECTION 2: BENAR / SALAH ================= -->
+        <section id="sec-truefalse" class="tab-content hidden space-y-6">
+            <div class="glass-panel rounded-2xl p-6 text-center max-w-2xl mx-auto space-y-4">
+                <div class="inline-flex p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 text-2xl">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h2 class="text-xl font-bold text-white">Uji Pemahaman: Benar atau Salah?</h2>
+                <p class="text-xs text-slate-400">Tentukan apakah pernyataan mengenai energi alternatif di bawah ini Benar atau Salah.</p>
+
+                <!-- True/False Card Container -->
+                <div id="tf-card" class="glass-card rounded-2xl p-6 border border-slate-700 text-left space-y-4 relative overflow-hidden transition-all">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span id="tf-counter" class="font-semibold text-emerald-400">Pertanyaan 1 dari 5</span>
+                        <span id="tf-score-badge" class="bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700">Skor: 0</span>
+                    </div>
+
+                    <p id="tf-statement" class="text-base sm:text-lg font-semibold text-slate-100 leading-relaxed min-h-[80px]">
+                        Loading pernyataan...
+                    </p>
+
+                    <!-- Buttons -->
+                    <div class="grid grid-cols-2 gap-4 pt-2">
+                        <button onclick="submitTF(true)" id="tf-true-btn" class="py-3 px-4 bg-emerald-600/80 hover:bg-emerald-600 text-white font-bold rounded-xl transition border border-emerald-500/50 flex items-center justify-center gap-2 text-sm shadow-lg">
+                            <i class="fa-solid fa-circle-check"></i> BENAR
+                        </button>
+                        <button onclick="submitTF(false)" id="tf-false-btn" class="py-3 px-4 bg-rose-600/80 hover:bg-rose-600 text-white font-bold rounded-xl transition border border-rose-500/50 flex items-center justify-center gap-2 text-sm shadow-lg">
+                            <i class="fa-solid fa-circle-xmark"></i> SALAH
+                        </button>
+                    </div>
+
+                    <!-- Feedback Panel -->
+                    <div id="tf-feedback" class="hidden p-4 rounded-xl text-xs space-y-2 mt-4">
+                        <p id="tf-feedback-title" class="font-bold text-sm"></p>
+                        <p id="tf-feedback-desc" class="text-slate-300 leading-relaxed"></p>
+                        <button onclick="nextTF()" class="mt-2 px-4 py-2 bg-emerald-600 text-white font-semibold rounded-lg hover:bg-emerald-500 transition text-xs">
+                            Lanjut Pertanyaan <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 3: MENJODOHKAN ================= -->
+        <section id="sec-matching" class="tab-content hidden space-y-6">
+            <div class="glass-panel rounded-2xl p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-puzzle-piece text-amber-400"></i> Menjodohkan Pasangan Energi
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">Pilih satu opsi di kolom **Sumber Energi** (kiri), lalu klik pasangannya yang sesuai di kolom **Deskripsi/Prinsip** (kanan).</p>
+                    </div>
+                    <button onclick="resetMatchingGame()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold border border-slate-700 flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-rotate-right"></i> Acak Ulang
+                    </button>
+                </div>
+
+                <!-- Matching Game Interactive Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                    <!-- Column A: Energy Sources -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2">Kolom A: Sumber Energi</h3>
+                        <div id="matching-col-a" class="space-y-2.5">
+                            <!-- Items A -->
+                        </div>
+                    </div>
+
+                    <!-- Column B: Descriptions -->
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2">Kolom B: Karakteristik / Cara Kerja</h3>
+                        <div id="matching-col-b" class="space-y-2.5">
+                            <!-- Items B -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Completion Box -->
+                <div id="matching-success-box" class="hidden glass-card bg-emerald-950/40 border border-emerald-500/50 p-4 rounded-xl text-center space-y-2">
+                    <p class="text-emerald-400 font-bold text-sm">🎉 Luar Biasa! Semua Pasangan Berhasil Dijodohkan!</p>
+                    <p class="text-xs text-slate-300">+50 XP Telah Ditambahkan ke Profilmu.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 4: MINI GAME INTERAKTIF ================= -->
+        <section id="sec-game" class="tab-content hidden space-y-6">
+            <div class="glass-panel rounded-2xl p-6 space-y-6">
+                <!-- Game Header -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 text-amber-400 border border-amber-400/20 text-xs font-bold uppercase mb-2">
+                            <i class="fa-solid fa-gamepad"></i> Simulator Edukasi
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-white">Eco Grid City: Manajer Energi Terbarukan</h2>
+                        <p class="text-xs text-slate-400">Penuhi kebutuhan energi kota bersih tanpa menimbulkan polusi berlebih!</p>
+                    </div>
+
+                    <!-- Game Status Board -->
+                    <div class="grid grid-cols-3 gap-2 sm:gap-4 bg-slate-900/90 p-3 rounded-xl border border-slate-800 text-center">
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Daya Listrik</p>
+                            <p id="game-power-status" class="text-sm font-extrabold text-emerald-400">0 / 100 MW</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Anggaran ($)</p>
+                            <p id="game-budget" class="text-sm font-extrabold text-amber-400">$1,000</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-slate-400 uppercase font-semibold">Indeks Hijau</p>
+                            <p id="game-eco-index" class="text-sm font-extrabold text-cyan-400">100%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather / Condition Event Banner -->
+                <div id="game-weather-banner" class="bg-slate-800/80 border border-cyan-500/30 p-3 rounded-xl flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2">
+                        <i id="weather-icon" class="fa-solid fa-sun text-amber-400 text-lg"></i>
+                        <div>
+                            <p id="weather-title" class="font-bold text-white">Cuaca: Cerah Berawan</p>
+                            <p id="weather-desc" class="text-slate-400 text-[11px]">Panel Surya beroperasi optimal pada 100% kapasitas.</p>
+                        </div>
+                    </div>
+                    <button onclick="nextGameTurn()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-900 font-extrabold rounded-xl transition text-xs shadow-lg shadow-emerald-500/20 whitespace-nowrap">
+                        Lanjut Hari / Putaran <i class="fa-solid fa-forward ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Game Grid & Controls -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Power Plants Catalog (Build Menu) -->
+                    <div class="space-y-3 lg:col-span-1">
+                        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Pembangkit Tersedia</h3>
+                        
+                        <div class="space-y-2">
+                            <!-- Plant 1: Surya -->
+                            <div class="glass-card p-3 rounded-xl flex items-center justify-between border border-slate-700 hover:border-amber-400 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                                        <i class="fa-solid fa-solar-panel"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-white">PLTS (Surya)</p>
+                                        <p class="text-[10px] text-slate-400">+25 MW | Bebas Polusi</p>
+                                    </div>
+                                </div>
+                                <button onclick="buyPlant('solar')" class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xs rounded-lg transition">
+                                    $300
+                                </button>
+                            </div>
+
+                            <!-- Plant 2: Angin -->
+                            <div class="glass-card p-3 rounded-xl flex items-center justify-between border border-slate-700 hover:border-sky-400 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg">
+                                        <i class="fa-solid fa-wind"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-white">PLTB (Angin)</p>
+                                        <p class="text-[10px] text-slate-400">+30 MW | Ramah Lingkungan</p>
+                                    </div>
+                                </div>
+                                <button onclick="buyPlant('wind')" class="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-900 font-bold text-xs rounded-lg transition">
+                                    $400
+                                </button>
+                            </div>
+
+                            <!-- Plant 3: Hydro -->
+                            <div class="glass-card p-3 rounded-xl flex items-center justify-between border border-slate-700 hover:border-blue-400 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg">
+                                        <i class="fa-solid fa-water"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-white">PLTA (Air)</p>
+                                        <p class="text-[10px] text-slate-400">+45 MW | Sangat Stabil</p>
+                                    </div>
+                                </div>
+                                <button onclick="buyPlant('hydro')" class="px-3 py-1.5 bg-blue-500 hover:bg-blue-400 text-slate-900 font-bold text-xs rounded-lg transition">
+                                    $600
+                                </button>
+                            </div>
+
+                            <!-- Plant 4: Geothermal -->
+                            <div class="glass-card p-3 rounded-xl flex items-center justify-between border border-slate-700 hover:border-emerald-400 transition">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                                        <i class="fa-solid fa-volcano"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-white">PLTP (Geotermal)</p>
+                                        <p class="text-[10px] text-slate-400">+60 MW | Panas Bumi 24 Jam</p>
+                                    </div>
+                                </div>
+                                <button onclick="buyPlant('geothermal')" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-bold text-xs rounded-lg transition">
+                                    $800
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Built Grid Plots (City Visual Map) -->
+                    <div class="lg:col-span-2 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Lahan Pembangkit Listrik Kota</h3>
+                            <span id="game-day-counter" class="text-xs font-bold text-emerald-400">Hari ke-1</span>
+                        </div>
+
+                        <!-- 6 Land Slots Grid -->
+                        <div id="city-slots-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <!-- Slots generated via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SECTION 5: KUIS EVALUASI MATERI ================= -->
+        <section id="sec-quiz" class="tab-content hidden space-y-6">
+            <div class="glass-panel rounded-2xl p-6 max-w-3xl mx-auto space-y-6">
+                <!-- Quiz Intro State -->
+                <div id="quiz-start-screen" class="text-center space-y-4 py-6">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-400/20 text-amber-400 flex items-center justify-center mx-auto text-3xl shadow-lg border border-amber-400/30">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white">Kuis Evaluasi Energi Alternatif</h2>
+                    <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                        Uji pemahaman akhir materi kamu melalui 10 soal pilihan ganda. Dapatkan skor terbaik untuk memperoleh Sertifikat Digital Pembelajar Hijau!
+                    </p>
+                    <div class="pt-2">
+                        <input type="text" id="student-name-input" placeholder="Masukkan Nama Lengkap Anda..." class="max-w-xs w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-center text-white focus:outline-none focus:border-emerald-500 mb-4">
+                        <br>
+                        <button onclick="startMainQuiz()" class="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-slate-900 font-extrabold rounded-xl transition text-sm shadow-lg shadow-emerald-500/20">
+                            Mulai Kuis Sekarang <i class="fa-solid fa-play ml-1.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Playing State -->
+                <div id="quiz-play-screen" class="hidden space-y-6">
+                    <div class="flex items-center justify-between text-xs border-b border-slate-800 pb-3">
+                        <span id="quiz-question-number" class="font-bold text-emerald-400">Soal 1 / 10</span>
+                        <div class="flex items-center gap-2 text-slate-400">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="quiz-timer" class="font-mono font-bold text-amber-400">10:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Question Box -->
+                    <div class="space-y-4">
+                        <h3 id="quiz-question-text" class="text-base sm:text-lg font-bold text-white leading-relaxed">
+                            Loading pertanyaan...
+                        </h3>
+
+                        <!-- Options List -->
+                        <div id="quiz-options-container" class="space-y-2.5">
+                            <!-- Options generated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Footer Controls -->
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-800">
+                        <button onclick="skipQuizQuestion()" class="px-4 py-2 bg-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-semibold">
+                            Lewati Soal
+                        </button>
+                        <button onclick="submitQuizAnswer()" id="quiz-next-btn" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition">
+                            Selanjutnya <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Results / Certificate Screen -->
+                <div id="quiz-result-screen" class="hidden text-center space-y-6 py-4">
+                    <div id="certificate-card" class="glass-card bg-slate-900 p-6 sm:p-8 rounded-2xl border-2 border-amber-400/50 space-y-4 relative overflow-hidden shadow-2xl">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-400/10 rounded-full blur-2xl"></div>
+                        
+                        <span class="inline-block px-3 py-1 bg-amber-400/20 text-amber-300 border border-amber-400/30 rounded-full text-[10px] font-extrabold uppercase tracking-widest">
+                            Sertifikat Penyelesaian Materi
+                        </span>
+                        
+                        <h3 class="text-2xl font-extrabold text-white">Pahlawan Energi Terbarukan</h3>
+                        <p class="text-xs text-slate-400">Diberikan secara resmi kepada:</p>
+                        <p id="cert-student-name" class="text-xl font-bold text-emerald-400 underline decoration-emerald-500/50 underline-offset-8">
+                            Nama Siswa
+                        </p>
+
+                        <p class="text-xs text-slate-300 max-w-md mx-auto">
+                            Telah menyelesaikan Kuis Evaluasi Media Pembelajaran Energi Alternatif dengan hasil:
+                        </p>
+
+                        <div class="grid grid-cols-2 max-w-xs mx-auto gap-3 py-2 bg-slate-800/80 rounded-xl border border-slate-700">
+                            <div>
+                                <p class="text-[10px] text-slate-400 uppercase">Skor Akhir</p>
+                                <p id="cert-score" class="text-lg font-extrabold text-amber-400">0 / 100</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-slate-400 uppercase">Status</p>
+                                <p id="cert-status" class="text-lg font-extrabold text-emerald-400">Lulus</p>
+                            </div>
+                        </div>
+
+                        <p class="text-[10px] text-slate-500">EcoEdu Interactive Learning System &bull; 2026</p>
+                    </div>
+
+                    <div class="flex justify-center gap-3">
+                        <button onclick="resetMainQuiz()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs border border-slate-700 transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> Coba Kuis Lagi
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-slate-800 bg-slate-950/80 py-6 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="text-slate-400 font-semibold">Media Pembelajaran Interaktif Energi Alternatif &copy; 2026</p>
+            <p class="text-[11px] text-slate-600">Didesain dengan pendekatan STEM untuk siswa usia 12 - 20 Tahun.</p>
+        </div>
+    </footer>
+
+    <!-- Custom Modal / Message Dialog (No alert used) -->
+    <div id="custom-modal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="glass-panel bg-slate-900 border border-slate-700 max-w-sm w-full rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+            <div id="modal-icon-box" class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <h3 id="modal-title" class="text-base font-bold text-white">Informasi</h3>
+            <p id="modal-desc" class="text-xs text-slate-300 leading-relaxed"></p>
+            <button onclick="closeModal()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition">
+                Tutup / Mengerti
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* Global Application State */
+        let userXP = parseInt(localStorage.getItem('eco_user_xp')) || 0;
+        let soundEnabled = true;
+
+        // Data Flashcard Energi
+        const flashcardsData = [
+            {
+                id: 'surya',
+                title: 'Energi Surya (Matahari)',
+                category: 'Radiasi Termal & Cahaya',
+                icon: 'fa-sun',
+                colorBg: 'from-amber-500/20 to-orange-500/10',
+                borderCol: 'border-amber-500/40',
+                textCol: 'text-amber-400',
+                desc: 'Memanfaatkan radiasi foton sinar matahari yang melimpah untuk dikonversi langsung menjadi listrik.',
+                penjelasan: 'Energi surya dihasilkan dari reaksi fusi nuklir alami di inti matahari yang menghasilkan energi radiasi tak terbatas.',
+                caraKerja: 'Sel Fotovoltaik (PV) berbahan silikon menangkap foton cahaya, menggerakkan elektron bebas hingga menghasilkan arus listrik searah (DC).',
+                keunggulan: ['Jumlahnya melimpah & gratis', 'Ramah lingkungan tanpa emisi saat beroperasi'],
+                tantangan: ['Tergantung cuaca & sinar matahari malam hari', 'Biaya baterai penyimpanan'],
+                contoh: 'PLTS Cirata Terapung, Kalkulator Surya, Lampu Jalan Otomatis.'
+            },
+            {
+                id: 'angin',
+                title: 'Energi Angin (Bayu)',
+                category: 'Energi Kinetik Udara',
+                icon: 'fa-wind',
+                colorBg: 'from-sky-500/20 to-blue-500/10',
+                borderCol: 'border-sky-500/40',
+                textCol: 'text-sky-400',
+                desc: 'Mengkonversi embusan angin kencang untuk memutar sudu kincir/turbin raksasa.',
+                penjelasan: 'Angin terbentuk akibat perbedaan suhu dan tekanan udara di permukaan bumi yang disinari matahari secara tidak merata.',
+                caraKerja: 'Angin memutar bilah turbin -> Poros utama memutar generator -> Generator mengonversi gerak mekanik menjadi listrik.',
+                keunggulan: ['Bebas emisi CO2', 'Lahan bawah turbin tetap dapat digunakan untuk bertani'],
+                tantangan: ['Kecepatan angin yang fluktuatif', 'Potensi bising frekuensi rendah'],
+                contoh: 'PLTB Sidrap (Sulawesi Selatan) dan PLTB Jeneponto.'
+            },
+            {
+                id: 'air',
+                title: 'Energi Air (Hidroelektrik)',
+                category: 'Potensial & Kinetik Air',
+                icon: 'fa-water',
+                colorBg: 'from-blue-500/20 to-indigo-500/10',
+                borderCol: 'border-blue-500/40',
+                textCol: 'text-blue-400',
+                desc: 'Memanfaatkan aliran deras air sungai atau jatuhnya air bendungan untuk membangkitkan listrik.',
+                penjelasan: 'Energi air mengandalkan siklus hidrologi dan dorongan gaya gravitasi bumi.',
+                caraKerja: 'Air bendungan dialirkan melalu saluran penstock bertekanan tinggi -> Menghantam sudu turbin air -> Memutar generator.',
+                keunggulan: ['Pasokan listrik sangat stabil (baseload)', 'Waduk dapat berfungsi untuk irigasi & cegah banjir'],
+                tantangan: ['Biaya konstruksi bendungan tinggi', 'Dampak perubahan ekosistem lokal'],
+                contoh: 'PLTA Jatiluhur, PLTA Saguling, dan Mikrohidro Desa.'
+            },
+            {
+                id: 'geotermal',
+                title: 'Panas Bumi (Geotermal)',
+                category: 'Termal Mantel Bumi',
+                icon: 'fa-volcano',
+                colorBg: 'from-emerald-500/20 to-teal-500/10',
+                borderCol: 'border-emerald-500/40',
+                textCol: 'text-emerald-400',
+                desc: 'Mengekstrak uap panas alami dari kerak dalam bumi dekat zona vulkanik.',
+                penjelasan: 'Bumi memiliki suhu internal sangat tinggi dari magma dan peluruhan elemen radioaktif alami.',
+                caraKerja: 'Fluida panas/uap diekstrak lewat sumur dalam -> Uap bertekanan menggerakkan turbin uap -> Listrik dialirkan.',
+                keunggulan: ['Tersedia terus menerus 24 jam non-stop', 'Jejak lahan permukaan sangat kecil'],
+                tantangan: ['Eksplorasi awal membutuhkan biaya besar', 'Terbatas di zona geologi aktif'],
+                contoh: 'PLTP Kamojang, PLTP Dieng, PLTP Lahendong.'
+            },
+            {
+                id: 'biomassa',
+                title: 'Biomassa & Biogas',
+                category: 'Materi Organik / Limbah',
+                icon: 'fa-seedling',
+                colorBg: 'from-green-500/20 to-emerald-500/10',
+                borderCol: 'border-green-500/40',
+                textCol: 'text-green-400',
+                desc: 'Mengolah limbah pertanian, kayu, dan kotoran ternak menjadi energi bakar atau gas metana.',
+                penjelasan: 'Materi organik menyimpan energi kimia yang diserap dari matahari saat fotosintesis.',
+                caraKerja: 'Kotoran/limbah difermentasi anaerobik dalam tabung digester -> Menghasilkan gas metana (CH4) -> Pembakaran generator.',
+                keunggulan: ['Mengurangi pencemaran limbah & sampah', 'Dapat dibuat secara mandiri di pedesaan'],
+                tantangan: ['Perlu pasokan rantai limbah berkelanjutan', 'Tetap menghasilkan asap jika dibakar langsung'],
+                contoh: 'Biogas kotoran sapi, Pelet Kayu (Wood Pellets), Biodiesel Sawit.'
+            },
+            {
+                id: 'laut',
+                title: 'Energi Samudra & Gelombang',
+                category: 'Dinamika Air Laut',
+                icon: 'fa-dharmachakra',
+                colorBg: 'from-cyan-500/20 to-teal-500/10',
+                borderCol: 'border-cyan-500/40',
+                textCol: 'text-cyan-400',
+                desc: 'Memanfaatkan pergerakan pasang surut air laut dan gelombang laut lepas.',
+                penjelasan: 'Pasang surut terjadi akibat gaya gravitasi Bulan dan Matahari terhadap air laut Bumi.',
+                caraKerja: 'Arus pasang surut memutar turbin bawah laut atau kompresi udara kolom gelombang OWC.',
+                keunggulan: ['Sangat terprediksi jadwal pasang surutnya', 'Potensi wilayah laut Indonesia melimpah'],
+                tantangan: ['Korosi garam air laut tinggi', 'Tantangan gelombang badai'],
+                contoh: 'PLT Pasang Surut La Rance & Turbin Arus Selat Larantuka.'
+            }
+        ];
+
+        /* Web Audio API Sound Synthesizer (No external sound file dependency) */
+        function playSound(type) {
+            if (!soundEnabled) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.05);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.05);
+                } else if (type === 'correct') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.08); // E5
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.25);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(180, ctx.currentTime);
+                    osc.frequency.setValueAtTime(130, ctx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.2);
+                }
+            } catch (e) {}
+        }
+
+        /* Add XP to User State */
+        function addXP(points) {
+            userXP += points;
+            localStorage.setItem('eco_user_xp', userXP);
+            document.getElementById('user-xp').textContent = `${userXP} XP`;
+        }
+
+        /* Custom Modal Dialog */
+        function showModal(title, desc, icon = 'fa-circle-info') {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-desc').textContent = desc;
+            document.getElementById('modal-icon-box').innerHTML = `<i class="fa-solid ${icon}"></i>`;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        /* Tab Switch Logic */
+        function switchTab(tabId) {
+            playSound('click');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-600/30');
+                btn.classList.add('bg-slate-800/80', 'text-slate-400');
+            });
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`tab-${tabId}`);
+            activeNav.classList.remove('bg-slate-800/80', 'text-slate-400');
+            activeNav.classList.add('bg-emerald-600', 'text-white', 'shadow-lg', 'shadow-emerald-600/30');
+        }
+
+        /* Render Flashcards */
+        function renderFlashcards(filterQuery = '') {
+            const container = document.getElementById('flashcards-grid');
+            container.innerHTML = '';
+
+            const filtered = flashcardsData.filter(item => 
+                item.title.toLowerCase().includes(filterQuery) || 
+                item.desc.toLowerCase().includes(filterQuery) ||
+                item.category.toLowerCase().includes(filterQuery)
+            );
+
+            filtered.forEach(card => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card-container perspective-1000 h-[460px] w-full cursor-pointer group';
+                
+                const speechText = `${card.title}. ${card.desc} ${card.penjelasan} Cara kerja: ${card.caraKerja}`;
+
+                cardEl.innerHTML = `
+                    <div class="card-inner shadow-xl rounded-2xl transition-all duration-300">
+                        <!-- FRONT -->
+                        <div class="card-front glass-card bg-slate-900/90 border ${card.borderCol} p-6 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-[10px] uppercase font-extrabold tracking-wider px-2.5 py-1 rounded-full bg-slate-800 ${card.textCol} border border-slate-700">
+                                        ${card.category}
+                                    </span>
+                                    <i class="fa-solid fa-rotate text-slate-500 group-hover:rotate-180 transition-transform duration-500"></i>
+                                </div>
+
+                                <div class="w-16 h-16 mx-auto my-4 rounded-2xl bg-gradient-to-br ${card.colorBg} flex items-center justify-center ${card.textCol} text-3xl shadow-lg border ${card.borderCol}">
+                                    <i class="fa-solid ${card.icon}"></i>
+                                </div>
+
+                                <h3 class="text-lg font-bold text-center text-white mb-2">${card.title}</h3>
+                                <p class="text-xs text-slate-300 text-center leading-relaxed">
+                                    ${card.desc}
+                                </p>
+                            </div>
+
+                            <div class="pt-4 border-t border-slate-800/80 text-center text-xs font-semibold ${card.textCol}">
+                                Klik Untuk Balik Card <i class="fa-solid fa-arrow-right-rotate ml-1"></i>
+                            </div>
+                        </div>
+
+                        <!-- BACK -->
+                        <div class="card-back glass-card bg-slate-950/95 border ${card.borderCol} p-5 flex flex-col justify-between text-slate-200">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                    <span class="font-bold text-xs ${card.textCol} flex items-center gap-1.5">
+                                        <i class="fa-solid ${card.icon}"></i> ${card.title}
+                                    </span>
+                                    <button onclick="event.stopPropagation(); readCardText('${speechText.replace(/'/g, "\\'")}', this)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-semibold border border-slate-700">
+                                        <i class="fa-solid fa-volume-high text-emerald-400"></i> Baca
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] font-extrabold text-amber-400 uppercase tracking-wider">Prinsip Konsep:</p>
+                                    <p class="text-[11px] text-slate-300 bg-slate-900/80 p-2 rounded-lg border border-slate-800 mt-0.5">${card.penjelasan}</p>
+                                </div>
+
+                                <div>
+                                    <p class="text-[10px] font-extrabold text-emerald-400 uppercase tracking-wider">Cara Kerja Konversi:</p>
+                                    <p class="text-[11px] text-slate-300 bg-slate-900/80 p-2 rounded-lg border border-slate-800 mt-0.5">${card.caraKerja}</p>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-2 text-[10px]">
+                                    <div class="bg-emerald-950/30 p-2 rounded-lg border border-emerald-900/40">
+                                        <p class="font-bold text-emerald-400 mb-0.5">Keunggulan:</p>
+                                        <ul class="list-disc list-inside text-slate-300">
+                                            ${card.keunggulan.map(k => `<li>${k}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                    <div class="bg-rose-950/30 p-2 rounded-lg border border-rose-900/40">
+                                        <p class="font-bold text-rose-400 mb-0.5">Tantangan:</p>
+                                        <ul class="list-disc list-inside text-slate-300">
+                                            ${card.tantangan.map(t => `<li>${t}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p class="text-[10px] text-slate-400 pt-2 border-t border-slate-800">
+                                <span class="text-slate-200 font-semibold">Contoh:</span> ${card.contoh}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                cardEl.addEventListener('click', () => {
+                    playSound('click');
+                    cardEl.classList.toggle('flipped');
+                });
+
+                container.appendChild(cardEl);
+            });
+        }
+
+        /* Voice Text to Speech */
+        function readCardText(text, btnEl) {
+            if (!('speechSynthesis' in window)) {
+                showModal('Tidak Didukung', 'Browser Anda tidak mendukung fitur membaca suara secara otomatis.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.95;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* ================= TRUE / FALSE LOGIC ================= */
+        const tfData = [
+            {
+                statement: "Panel surya tetap dapat menghasilkan energi listrik maksimal meskipun pada malam hari.",
+                answer: false,
+                explanation: "Salah. Panel surya memerlukan radiasi foton sinar matahari. Pada malam hari, energi surya tidak dapat diproduksi kecuali disimpan di baterai."
+            },
+            {
+                statement: "Pembangkit Listrik Tenaga Panas Bumi (Geotermal) memenfaatkan uap panas dari inti/kerak bumi dan bebas dari polusi karbon udara tinggi.",
+                answer: true,
+                explanation: "Benar. Geotermal mengekstrak uap alami bumi dan memiliki tingkat emisi karbon yang sangat minimal."
+            },
+            {
+                statement: "Biogas dihasilkan dari proses fermentasi materi organik kotoran ternak secara anaerobik (tanpa oksigen).",
+                answer: true,
+                explanation: "Benar. Bakteri anaerob menguraikan bahan organik dan menghasilkan gas metana (CH4) yang mudah terbakar untuk energi."
+            },
+            {
+                statement: "Energi angin hanya dapat dipasang di wilayah daratan tinggi dan tidak bisa dipasang di lepas pantai.",
+                answer: false,
+                explanation: "Salah. Turbin angin lepas pantai (Offshore Wind Turbines) justru sangat efektif karena embusan angin laut sangat kencang dan stabil."
+            },
+            {
+                statement: "Salah satu keunggulan utama energi air (PLTA) adalah kemampuannya menyediakan pasokan listrik yang sangat stabil dan kontinu.",
+                answer: true,
+                explanation: "Benar. Selama debit air waduk terjaga, PLTA dapat menjadi pemasok listrik utama (baseload) yang sangat stabil."
+            }
+        ];
+
+        let tfIndex = 0;
+        let tfScore = 0;
+
+        function loadTF() {
+            if (tfIndex >= tfData.length) {
+                showModal('Selesai!', `Latihan Benar/Salah selesai. Skor Anda: ${tfScore * 20}/100`, 'fa-trophy');
+                addXP(tfScore * 10);
+                tfIndex = 0;
+                tfScore = 0;
+            }
+            const q = tfData[tfIndex];
+            document.getElementById('tf-counter').textContent = `Pertanyaan ${tfIndex + 1} dari ${tfData.length}`;
+            document.getElementById('tf-score-badge').textContent = `Skor: ${tfScore * 20}`;
+            document.getElementById('tf-statement').textContent = q.statement;
+            
+            document.getElementById('tf-feedback').classList.add('hidden');
+            document.getElementById('tf-true-btn').disabled = false;
+            document.getElementById('tf-false-btn').disabled = false;
+        }
+
+        function submitTF(userAns) {
+            const q = tfData[tfIndex];
+            const isCorrect = userAns === q.answer;
+            
+            document.getElementById('tf-true-btn').disabled = true;
+            document.getElementById('tf-false-btn').disabled = true;
+
+            const fbBox = document.getElementById('tf-feedback');
+            const fbTitle = document.getElementById('tf-feedback-title');
+            const fbDesc = document.getElementById('tf-feedback-desc');
+
+            fbBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                playSound('correct');
+                tfScore++;
+                fbBox.className = 'p-4 rounded-xl text-xs space-y-1 mt-4 bg-emerald-950/60 border border-emerald-500/50 text-emerald-300';
+                fbTitle.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> JAWABAN BENAR! (+20 Poin)';
+            } else {
+                playSound('wrong');
+                fbBox.className = 'p-4 rounded-xl text-xs space-y-1 mt-4 bg-rose-950/60 border border-rose-500/50 text-rose-300';
+                fbTitle.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i> JAWABAN KURANG TEPAT';
+            }
+            fbDesc.textContent = q.explanation;
+        }
+
+        function nextTF() {
+            playSound('click');
+            tfIndex++;
+            loadTF();
+        }
+
+        /* ================= MATCHING GAME LOGIC ================= */
+        const matchingPairs = [
+            { id: 1, source: 'PLTS (Surya)', desc: 'Mengubah foton sinar matahari menjadi listrik DC lewat sel silikon.' },
+            { id: 2, source: 'PLTB (Angin)', desc: 'Memutar sudu kincir untuk menggerakkan generator mekanik.' },
+            { id: 3, source: 'PLTP (Geotermal)', desc: 'Memanfaatkan uap panas alami batuan dalam mantel bumi.' },
+            { id: 4, source: 'Biogas (Biomassa)', desc: 'Fermentasi anaerobik kotoran ternak menghasilkan gas metana.' },
+            { id: 5, source: 'PLTA (Air)', desc: 'Menggunakan dorongan air terjun/bendungan memutar turbin air.' }
+        ];
+
+        let selectedA = null;
+        let matchedIds = [];
+
+        function initMatchingGame() {
+            matchedIds = [];
+            selectedA = null;
+            document.getElementById('matching-success-box').classList.add('hidden');
+
+            const colA = document.getElementById('matching-col-a');
+            const colB = document.getElementById('matching-col-b');
+
+            colA.innerHTML = '';
+            colB.innerHTML = '';
+
+            // Shuffle Column B
+            const shuffledB = [...matchingPairs].sort(() => Math.random() - 0.5);
+
+            matchingPairs.forEach(item => {
+                const btnA = document.createElement('button');
+                btnA.className = `match-btn-a w-full p-3.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs font-bold text-slate-200 text-left transition flex items-center justify-between`;
+                btnA.setAttribute('data-id', item.id);
+                btnA.onclick = () => selectMatchingA(item.id, btnA);
+                btnA.innerHTML = `<span><i class="fa-solid fa-bolt text-amber-400 mr-2"></i>${item.source}</span> <i class="fa-regular fa-circle text-slate-500"></i>`;
+                colA.appendChild(btnA);
+            });
+
+            shuffledB.forEach(item => {
+                const btnB = document.createElement('button');
+                btnB.className = `match-btn-b w-full p-3.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-300 text-left transition`;
+                btnB.setAttribute('data-id', item.id);
+                btnB.onclick = () => selectMatchingB(item.id, btnB);
+                btnB.innerHTML = item.desc;
+                colB.appendChild(btnB);
+            });
+        }
+
+        function selectMatchingA(id, btn) {
+            if (matchedIds.includes(id)) return;
+            playSound('click');
+
+            document.querySelectorAll('.match-btn-a').forEach(b => {
+                if (!matchedIds.includes(parseInt(b.getAttribute('data-id')))) {
+                    b.classList.remove('border-emerald-500', 'bg-emerald-950/40');
+                    b.classList.add('border-slate-700', 'bg-slate-800/80');
+                }
+            });
+
+            selectedA = id;
+            btn.classList.remove('border-slate-700', 'bg-slate-800/80');
+            btn.classList.add('border-emerald-500', 'bg-emerald-950/40');
+        }
+
+        function selectMatchingB(id, btn) {
+            if (!selectedA) {
+                showModal('Pilih Kolom A', 'Klik satu sumber energi di Kolom A (kiri) terlebih dahulu!');
+                return;
+            }
+            if (matchedIds.includes(id)) return;
+
+            if (selectedA === id) {
+                playSound('correct');
+                matchedIds.push(id);
+
+                const btnA = document.querySelector(`.match-btn-a[data-id="${id}"]`);
+                btnA.className = 'w-full p-3.5 rounded-xl border border-emerald-500 bg-emerald-950/60 text-xs font-bold text-emerald-300 text-left transition flex items-center justify-between cursor-default';
+                btnA.querySelector('i.fa-regular').className = 'fa-solid fa-circle-check text-emerald-400';
+
+                btn.className = 'w-full p-3.5 rounded-xl border border-emerald-500 bg-emerald-950/60 text-xs text-emerald-300 text-left transition cursor-default';
+
+                selectedA = null;
+
+                if (matchedIds.length === matchingPairs.length) {
+                    document.getElementById('matching-success-box').classList.remove('hidden');
+                    addXP(50);
+                    confetti({ particleCount: 50, spread: 60 });
+                }
+            } else {
+                playSound('wrong');
+                showModal('Belum Pas', 'Pasangan yang kamu pilih belum cocok. Coba baca kembali prinsip kinerjanya!', 'fa-triangle-exclamation');
+            }
+        }
+
+        function resetMatchingGame() {
+            playSound('click');
+            initMatchingGame();
+        }
+
+        /* ================= ECO CITY SIMULATOR MINI GAME ================= */
+        let gameDay = 1;
+        let gameBudget = 1000;
+        let citySlots = [null, null, null, null, null, null];
+
+        const plantsCatalog = {
+            solar: { name: 'PLTS (Surya)', power: 25, cost: 300, icon: 'fa-solar-panel', col: 'text-amber-400' },
+            wind: { name: 'PLTB (Angin)', power: 30, cost: 400, icon: 'fa-wind', col: 'text-sky-400' },
+            hydro: { name: 'PLTA (Air)', power: 45, cost: 600, icon: 'fa-water', col: 'text-blue-400' },
+            geothermal: { name: 'PLTP (Geotermal)', power: 60, cost: 800, icon: 'fa-volcano', col: 'text-emerald-400' }
+        };
+
+        function renderCityGrid() {
+            const grid = document.getElementById('city-slots-grid');
+            grid.innerHTML = '';
+
+            citySlots.forEach((plantKey, idx) => {
+                const slotEl = document.createElement('div');
+                slotEl.className = 'glass-card border border-slate-700/80 rounded-2xl p-4 text-center min-h-[120px] flex flex-col items-center justify-center relative group hover:border-slate-500 transition';
+
+                if (plantKey) {
+                    const plant = plantsCatalog[plantKey];
+                    slotEl.innerHTML = `
+                        <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center ${plant.col} text-xl mb-1 border border-slate-700">
+                            <i class="fa-solid ${plant.icon}"></i>
+                        </div>
+                        <p class="text-xs font-bold text-white">${plant.name}</p>
+                        <p class="text-[10px] text-emerald-400 font-bold">+${plant.power} MW</p>
+                        <button onclick="sellPlant(${idx})" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-rose-400 text-xs p-1 hover:text-rose-300 transition" title="Hapus/Jual">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `;
+                } else {
+                    slotEl.innerHTML = `
+                        <div class="text-slate-600 text-2xl mb-1">
+                            <i class="fa-solid fa-plus-circle"></i>
+                        </div>
+                        <p class="text-[11px] text-slate-500 font-medium">Lahan Kosong #${idx+1}</p>
+                    `;
+                }
+                grid.appendChild(slotEl);
+            });
+
+            // Update stats
+            let totalPower = 0;
+            citySlots.forEach(key => {
+                if (key) totalPower += plantsCatalog[key].power;
+            });
+
+            document.getElementById('game-power-status').textContent = `${totalPower} / 120 MW`;
+            document.getElementById('game-budget').textContent = `$${gameBudget}`;
+            document.getElementById('game-day-counter').textContent = `Hari ke-${gameDay}`;
+        }
+
+        function buyPlant(typeKey) {
+            const plant = plantsCatalog[typeKey];
+            if (gameBudget < plant.cost) {
+                showModal('Anggaran Kurang', `Kamu membutuhkan $${plant.cost} untuk membangun ${plant.name}. Tambah putaran hari untuk pemasukan dana!`, 'fa-wallet');
+                return;
+            }
+
+            const emptyIdx = citySlots.findIndex(s => s === null);
+            if (emptyIdx === -1) {
+                showModal('Lahan Penuh', 'Semua 6 lahan kota sudah terbangun! Jual salah satu pembangkit jika ingin mengganti.', 'fa-land-mine-on');
+                return;
+            }
+
+            playSound('correct');
+            gameBudget -= plant.cost;
+            citySlots[emptyIdx] = typeKey;
+            renderCityGrid();
+        }
+
+        function sellPlant(idx) {
+            if (citySlots[idx]) {
+                playSound('click');
+                const plant = plantsCatalog[citySlots[idx]];
+                gameBudget += Math.floor(plant.cost * 0.7);
+                citySlots[idx] = null;
+                renderCityGrid();
+            }
+        }
+
+        function nextGameTurn() {
+            playSound('click');
+            gameDay++;
+            gameBudget += 250; // Daily eco subsidy income
+
+            // Random Weather Event
+            const events = [
+                { title: 'Cuaca: Cerah Berawan', desc: 'Sinar matahari maksimal untuk PLTS.', icon: 'fa-sun', col: 'text-amber-400' },
+                { title: 'Cuaca: Badai Angin Kencang', desc: 'Embusan angin laut melimpah memutar penuh PLTB.', icon: 'fa-wind', col: 'text-sky-400' },
+                { title: 'Cuaca: Musim Hujan Deras', desc: 'Debit air bendungan berlimpah menaikkan performa PLTA.', icon: 'fa-cloud-showers-heavy', col: 'text-blue-400' }
+            ];
+
+            const ev = events[Math.floor(Math.random() * events.length)];
+            document.getElementById('weather-title').textContent = ev.title;
+            document.getElementById('weather-desc').textContent = ev.desc;
+            document.getElementById('weather-icon').className = `fa-solid ${ev.icon} ${ev.col} text-lg`;
+
+            let currentPower = 0;
+            citySlots.forEach(key => { if (key) currentPower += plantsCatalog[key].power; });
+
+            if (currentPower >= 120) {
+                confetti({ particleCount: 40 });
+                addXP(30);
+            }
+
+            renderCityGrid();
+        }
+
+        /* ================= MAIN EVALUATION QUIZ ================= */
+        const quizData = [
+            {
+                q: "Proses konversi cahaya matahari menjadi energi listrik pada solar panel memanfaatkan efek...",
+                opts: ["Elektromagnetik Termal", "Fotovoltaik (PV)", "Geotermal Induksi", "Fusi Nuklir Buatan"],
+                ans: 1
+            },
+            {
+                q: "Pembangkit Listrik Tenaga Bayu (PLTB) memanfaatkan jenis energi...",
+                opts: ["Potensial Air", "Kinetik Udara / Angin", "Kimia Murni", "Radiasi Foton"],
+                ans: 1
+            },
+            {
+                q: "Manakah di bawah ini energi terbarukan yang dapat beroperasi 24 jam non-stop tanpa terpengaruh cuaca?",
+                opts: ["Energi Surya", "Energi Panas Bumi (Geotermal)", "Energi Angin Lepas Pantai", "Energi Gelombang Laut"],
+                ans: 1
+            },
+            {
+                q: "Gas utama yang dihasilkan dari penguraian limbah organik kotoran ternak pada biogas adalah...",
+                opts: ["Karbon Monoksida (CO)", "Oksigen (O2)", "Metana (CH4)", "Nitrogen (N2)"],
+                ans: 2
+            },
+            {
+                q: "Pembangkit listrik yang menggunakan siklus pasang surut dan arus samudra disebut energi...",
+                opts: ["Hidroelektrik Sungai", "Laut / Samudra", "Biomassa Laut", "Geotermal Pesisir"],
+                ans: 1
+            }
+        ];
+
+        let currentQIdx = 0;
+        let quizScorePoints = 0;
+        let selectedQuizOpt = null;
+
+        function startMainQuiz() {
+            const name = document.getElementById('student-name-input').value.trim();
+            if (!name) {
+                showModal('Nama Diperlukan', 'Silakan masukkan nama Anda sebelum memulai kuis evaluasi!', 'fa-user-pen');
+                return;
+            }
+
+            playSound('click');
+            document.getElementById('quiz-start-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-play-screen').classList.remove('hidden');
+
+            currentQIdx = 0;
+            quizScorePoints = 0;
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            selectedQuizOpt = null;
+            const q = quizData[currentQIdx];
+
+            document.getElementById('quiz-question-number').textContent = `Soal ${currentQIdx + 1} / ${quizData.length}`;
+            document.getElementById('quiz-question-text').textContent = q.q;
+
+            const optsContainer = document.getElementById('quiz-options-container');
+            optsContainer.innerHTML = '';
+
+            q.opts.forEach((optText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `quiz-opt-btn w-full p-3.5 rounded-xl border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 text-left transition flex items-center justify-between`;
+                btn.onclick = () => selectQuizOpt(idx, btn);
+                btn.innerHTML = `<span>${String.fromCharCode(65 + idx)}. ${optText}</span> <i class="fa-regular fa-circle text-slate-500"></i>`;
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function selectQuizOpt(idx, btn) {
+            playSound('click');
+            selectedQuizOpt = idx;
+            document.querySelectorAll('.quiz-opt-btn').forEach(b => {
+                b.classList.remove('border-emerald-500', 'bg-emerald-950/40');
+                b.classList.add('border-slate-700', 'bg-slate-800/80');
+            });
+            btn.classList.remove('border-slate-700', 'bg-slate-800/80');
+            btn.classList.add('border-emerald-500', 'bg-emerald-950/40');
+        }
+
+        function submitQuizAnswer() {
+            if (selectedQuizOpt === null) {
+                showModal('Pilih Jawaban', 'Pilih salah satu opsi jawaban sebelum melanjutkan!');
+                return;
+            }
+
+            if (selectedQuizOpt === quizData[currentQIdx].ans) {
+                quizScorePoints += 20;
+            }
+
+            currentQIdx++;
+            if (currentQIdx < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                finishMainQuiz();
+            }
+        }
+
+        function skipQuizQuestion() {
+            currentQIdx++;
+            if (currentQIdx < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                finishMainQuiz();
+            }
+        }
+
+        function finishMainQuiz() {
+            playSound('correct');
+            document.getElementById('quiz-play-screen').classList.add('hidden');
+            document.getElementById('quiz-result-screen').classList.remove('hidden');
+
+            const studentName = document.getElementById('student-name-input').value.trim() || 'Siswa Pembelajar';
+            document.getElementById('cert-student-name').textContent = studentName;
+            document.getElementById('cert-score').textContent = `${quizScorePoints} / 100`;
+
+            if (quizScorePoints >= 70) {
+                document.getElementById('cert-status').textContent = 'LULUS (SANGAT BAIK)';
+                document.getElementById('cert-status').className = 'text-lg font-extrabold text-emerald-400';
+                confetti({ particleCount: 80, spread: 70 });
+                addXP(100);
+            } else {
+                document.getElementById('cert-status').textContent = 'PERLU REVISI';
+                document.getElementById('cert-status').className = 'text-lg font-extrabold text-amber-400';
+                addXP(20);
+            }
+        }
+
+        function resetMainQuiz() {
+            playSound('click');
+            document.getElementById('quiz-result-screen').classList.add('hidden');
+            document.getElementById('quiz-start-screen').classList.remove('hidden');
+        }
+
+        /* Global Initialization */
+        window.onload = function() {
+            document.getElementById('user-xp').textContent = `${userXP} XP`;
+            renderFlashcards();
+            loadTF();
+            initMatchingGame();
+            renderCityGrid();
+
+            // Search Filter
+            document.getElementById('card-search').addEventListener('input', (e) => {
+                renderFlashcards(e.target.value.toLowerCase().trim());
+            });
+
+            // Mute Toggle
+            document.getElementById('sound-toggle-btn').addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                document.getElementById('sound-icon').className = soundEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark text-rose-400';
+            });
+        };
+    </script>
+</body>
+</html>
